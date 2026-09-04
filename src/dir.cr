@@ -276,7 +276,7 @@ class Dir
   end
 
   # Creates a new directory at the given path. The linux-style permission mode
-  # can be specified, with a default of 777 (0o777).
+  # can be specified, with a default of `File::Permissions::All`.
   #
   # NOTE: *mode* is ignored on windows.
   #
@@ -286,16 +286,16 @@ class Dir
   # ```
   #
   # Raises `File::AlreadyExistsError` if the directory already exists.
-  def self.mkdir(path : Path | String, mode : Int32 = 0o777) : Nil
+  def self.mkdir(path : Path | String, mode : Int32 = File::Permissions::All.to_i32) : Nil
     Crystal::System::Dir.create(path.to_s, mode)
   end
 
   # Creates a new directory at the given path, including any non-existing
   # intermediate directories. The linux-style permission mode can be specified,
-  # with a default of 777 (0o777).
+  # with a default of `File::Permissions::All`.
   #
   # Does nothing if a directory already exists.
-  def self.mkdir_p(path : Path | String, mode : Int32 = 0o777) : Nil
+  def self.mkdir_p(path : Path | String, mode : Int32 = File::Permissions::All.to_i32) : Nil
     return if Dir.exists?(path)
 
     path = Path.new path
