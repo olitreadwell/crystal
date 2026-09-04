@@ -24,7 +24,7 @@
 - Large, well-organised issue tracker (community:* labels). Not needed for this trivial-fix pass.
 
 ## Gap ledger (dedupe — READ FIRST, never re-pick)
-(none yet)
+- `2026-09-04` self-found duplicated-word/typo pack (6 files) — outcome: pr-opened https://github.com/olitreadwell/crystal/pull/1 — lesson: `typos` CI does NOT flag duplicated words, so fixing the man pages "a a", changelog/comment `methods methods` / `when when`, and the fast-glob generator's `are are` + stale `.cr`→`.sh` ref was safe and CI-neutral.
 
 ## Mined gaps (discovered, not yet attempted)
 - duplicated-word typos in hand-written docs/comments (not caught by the `typos` spell-checker, which does not flag repeated valid words):
