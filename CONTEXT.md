@@ -25,8 +25,10 @@
 
 ## Gap ledger (dedupe — READ FIRST, never re-pick)
 - `2026-09-04` self-found duplicated-word/typo pack (6 files) — outcome: pr-opened https://github.com/olitreadwell/crystal/pull/1 — lesson: `typos` CI does NOT flag duplicated words, so fixing the man pages "a a", changelog/comment `methods methods` / `when when`, and the fast-glob generator's `are are` + stale `.cr`→`.sh` ref was safe and CI-neutral.
+- `2026-09-04` #13466 (open, kind:docs) — API docs render `Dir.mkdir`/`mkdir_p` default mode as decimal `511` instead of `0o777`. Root cause: lexer normalizes non-decimal literals to decimal (`src/compiler/crystal/syntax/lexer.cr`), so the docs generator (`src/compiler/crystal/tools/doc/method.cr`) prints `511`. Maintainer straight-shoota suggested using `File::Permissions::All`. Fix: default `mode : Int32 = File::Permissions::All.to_i32` in `Dir.mkdir`/`mkdir_p` + `FileUtils.mkdir`/`mkdir_p` (4 overloads), docs now render `File::Permissions::All.to_i32`. Verified: `crystal tool format --check` clean, stdlib type-checks via `crystal build --no-codegen`, `crystal docs` renders `File::Permissions::All.to_i32` (no `511`). Could not run `make std_spec` (no cc/linker in env). — outcome: pr-opened
 
 ## Mined gaps (discovered, not yet attempted)
+- `2026-09-04` docs-generator root cause: lexer converts octal/hex/binary literals to decimal, so ANY stdlib default arg written as `0o777`/`0xFF` renders as decimal in API docs (not just Dir.mkdir). A compiler-level fix (preserve original literal for docs) would fix all such cases, but needs a full compiler build to verify (no cc in env). — status: proposed
 - duplicated-word typos in hand-written docs/comments (not caught by the `typos` spell-checker, which does not flag repeated valid words):
   - `doc/man/crystal.adoc` + `doc/man/crystal-init.adoc`: "Create a a new Crystal project"
   - `doc/changelogs/v1.16.md`: "`#wait_writable` methods methods"
