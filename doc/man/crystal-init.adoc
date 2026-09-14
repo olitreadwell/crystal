@@ -7,7 +7,7 @@
 
 == Name
 
-crystal-init - Create a a new Crystal project
+crystal-init - Create a new Crystal project
 
 == Synopsis
 
