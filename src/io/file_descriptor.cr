@@ -13,7 +13,7 @@ class IO::FileDescriptor < IO
   #
   # The file-descriptor handle has been configured for the IO system
   # requirements. If it must be in a specific mode or have a specific set of
-  # flags set, then they must be applied, even when when it feels redundant,
+  # flags set, then they must be applied, even when it feels redundant,
   # because even the same target isn't guaranteed to have the same requirements
   # at runtime.
   def fd : Handle
