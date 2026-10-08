@@ -62,7 +62,7 @@ them, so it allows to use the *crystal* command almost to be used as if it was a
 
 === Main commands
 
-*crystal-init(1)*:: Create a a new Crystal project
+*crystal-init(1)*:: Create a new Crystal project
 
 *crystal-build(1)*:: Compile a Crystal program
 
