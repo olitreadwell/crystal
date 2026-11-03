@@ -223,7 +223,7 @@ module FileUtils
       dest_path = File.join(dest_path, File.basename(src_path))
     end
 
-    rm_rf(dest_path) if File.exists?(dest_path)
+    rm_rf(dest_path) if File.exists?(dest_path, follow_symlinks: false)
     File.symlink(src_path, dest_path)
   end
 
@@ -248,7 +248,7 @@ module FileUtils
   end
 
   # Creates a new directory at the given *path*. The linux-style permission *mode*
-  # can be specified, with a default of 777 (0o777).
+  # can be specified, with a default of `File::Permissions::All`.
   #
   # ```
   # require "file_utils"
@@ -257,19 +257,19 @@ module FileUtils
   # ```
   #
   # NOTE: Alias of `Dir.mkdir`
-  def mkdir(path : Path | String, mode = 0o777) : Nil
+  def mkdir(path : Path | String, mode = File::Permissions::All.to_i32) : Nil
     Dir.mkdir(path, mode)
   end
 
   # Creates a new directory at the given *paths*. The linux-style permission *mode*
-  # can be specified, with a default of 777 (0o777).
+  # can be specified, with a default of `File::Permissions::All`.
   #
   # ```
   # require "file_utils"
   #
   # FileUtils.mkdir(["foo", "bar"])
   # ```
-  def mkdir(paths : Enumerable(Path | String), mode = 0o777) : Nil
+  def mkdir(paths : Enumerable(Path | String), mode = File::Permissions::All.to_i32) : Nil
     paths.each do |path|
       Dir.mkdir(path, mode)
     end
@@ -277,7 +277,7 @@ module FileUtils
 
   # Creates a new directory at the given *path*, including any non-existing
   # intermediate directories. The linux-style permission *mode* can be specified,
-  # with a default of 777 (0o777).
+  # with a default of `File::Permissions::All`.
   #
   # ```
   # require "file_utils"
@@ -286,20 +286,20 @@ module FileUtils
   # ```
   #
   # NOTE: Alias of `Dir.mkdir_p`
-  def mkdir_p(path : Path | String, mode = 0o777) : Nil
+  def mkdir_p(path : Path | String, mode = File::Permissions::All.to_i32) : Nil
     Dir.mkdir_p(path, mode)
   end
 
   # Creates a new directory at the given *paths*, including any non-existing
   # intermediate directories. The linux-style permission *mode* can be specified,
-  # with a default of 777 (0o777).
+  # with a default of `File::Permissions::All`.
   #
   # ```
   # require "file_utils"
   #
   # FileUtils.mkdir_p(["foo", "bar", "baz", "dir1", "dir2", "dir3"])
   # ```
-  def mkdir_p(paths : Enumerable(Path | String), mode = 0o777) : Nil
+  def mkdir_p(paths : Enumerable(Path | String), mode = File::Permissions::All.to_i32) : Nil
     paths.each do |path|
       Dir.mkdir_p(path, mode)
     end
@@ -334,7 +334,6 @@ module FileUtils
     raise ArgumentError.new("No such directory : #{dest}") unless Dir.exists?(dest)
     srcs.each do |src|
       mv(src, File.join(dest, File.basename(src)))
-    rescue File::Error
     end
   end
 
@@ -413,7 +412,7 @@ module FileUtils
   # FileUtils.rm_r("file.cr")
   # ```
   def rm_r(path : Path | String) : Nil
-    if Dir.exists?(path) && !File.symlink?(path)
+    if File.info?(path, follow_symlinks: false).try(&.type.directory?)
       Dir.each_child(path) do |entry|
         src = File.join(path, entry)
         rm_r(src)
