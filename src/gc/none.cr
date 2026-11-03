@@ -5,6 +5,7 @@
 require "crystal/tracing"
 
 module GC
+  # :nodoc:
   def self.init
     Crystal::System::Thread.init_suspend_resume
   end
@@ -63,15 +64,22 @@ module GC
     ptr
   end
 
-  def self.collect
+  def self.collect : Nil
   end
 
-  def self.enable
+  def self.enable : Nil
   end
 
-  def self.disable
+  def self.disable : Nil
   end
 
+  # :nodoc:
+  def self.max_heap_size=(size : UInt64) : UInt64
+    raise ArgumentError.new("max_heap_size must be 0") unless size.zero?
+    size
+  end
+
+  # :nodoc:
   def self.free(pointer : Void*) : Nil
     Crystal.trace :gc, "free"
 
@@ -82,13 +90,16 @@ module GC
     {% end %}
   end
 
+  # :nodoc:
   def self.is_heap_ptr(pointer : Void*) : Bool
     false
   end
 
+  # :nodoc:
   def self.add_finalizer(object)
   end
 
+  # :nodoc:
   def self.register_disappearing_link(pointer : Void**)
   end
 
@@ -148,14 +159,15 @@ module GC
     {Pointer(Void).null, Pointer(Void).null}
   end
 
-  # :nodoc:
   {% if !flag?(:without_mt) %}
+    # :nodoc:
     def self.set_stackbottom(thread : Thread, stack_bottom : Void*)
       # NOTE we could store stack_bottom per thread,
       #      and return it in `#current_thread_stack_bottom`,
       #      but there is no actual use for that.
     end
   {% else %}
+    # :nodoc:
     def self.set_stackbottom(stack_bottom : Void*)
     end
   {% end %}

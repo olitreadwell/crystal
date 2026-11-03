@@ -3,8 +3,12 @@ require "../unix/file_descriptor"
 # :nodoc:
 module Crystal::System::FileDescriptor
   def self.from_stdio(fd)
-    # TODO: WASI doesn't offer a way to detect if a 'fd' is a TTY.
-    IO::FileDescriptor.new(fd).tap(&.flush_on_newline=(true))
+    if Crystal.stdio_closed?(fd)
+      IO::FileDescriptor.new(closed: true)
+    else
+      # TODO: WASI doesn't offer a way to detect if a 'fd' is a TTY.
+      IO::FileDescriptor.new(fd).tap(&.flush_on_newline=(true))
+    end
   end
 
   def self.fcntl(fd, cmd, arg = 0)
@@ -30,7 +34,7 @@ module Crystal::System::FileDescriptor
     raise NotImplementedError.new "Crystal::System::FileDescriptor#system_reopen"
   end
 
-  private def system_lock(blocking, exclusive)
+  private def system_lock(blocking : Bool, exclusive : Bool) : Nil
     raise NotImplementedError.new "Crystal::System::File#system_lock"
   end
 
